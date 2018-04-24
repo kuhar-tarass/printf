@@ -1,21 +1,27 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_printf.h                                        :+:      :+:    :+:   */
+/*   ft_memcpy.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: tkuhar <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2018/04/24 20:48:24 by tkuhar            #+#    #+#             */
-/*   Updated: 2018/04/24 22:59:03 by tkuhar           ###   ########.fr       */
+/*   Created: 2018/03/23 13:54:45 by tkuhar            #+#    #+#             */
+/*   Updated: 2018/03/23 13:54:47 by tkuhar           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef FT_PRINTF_H
-# define FT_PRINTF_H
+#include "libft.h"
 
-# include <stdio.h>
-# include <stdarg.h>
-# include <stdio.h>
-# include "./libft/libft.h"
+void		*ft_memcpy(void *dst, const void *src, size_t n)
+{
+	void	*copy;
 
-#endif
+	copy = dst;
+	while (n-- > 0)
+	{
+		*(unsigned char *)dst = *(unsigned char *)src;
+		dst++;
+		src++;
+	}
+	return (copy);
+}

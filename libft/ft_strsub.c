@@ -1,21 +1,33 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_printf.h                                        :+:      :+:    :+:   */
+/*   ft_strsub.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: tkuhar <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2018/04/24 20:48:24 by tkuhar            #+#    #+#             */
-/*   Updated: 2018/04/24 22:59:03 by tkuhar           ###   ########.fr       */
+/*   Created: 2018/03/25 18:00:59 by tkuhar            #+#    #+#             */
+/*   Updated: 2018/03/25 18:01:01 by tkuhar           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef FT_PRINTF_H
-# define FT_PRINTF_H
+#include "libft.h"
 
-# include <stdio.h>
-# include <stdarg.h>
-# include <stdio.h>
-# include "./libft/libft.h"
+char		*ft_strsub(char const *s, unsigned int start, size_t len)
+{
+	size_t	i;
+	char	*sub;
 
-#endif
+	i = 0;
+	if (!s)
+		return (0);
+	sub = (char *)malloc(sizeof(char) * (len + 1));
+	if (!sub)
+		return (0);
+	while (i < len)
+	{
+		sub[i] = s[start + i];
+		i++;
+	}
+	sub[i] = '\0';
+	return (sub);
+}

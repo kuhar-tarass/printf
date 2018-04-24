@@ -1,21 +1,38 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_printf.h                                        :+:      :+:    :+:   */
+/*   ft_putnbr_fd.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: tkuhar <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2018/04/24 20:48:24 by tkuhar            #+#    #+#             */
-/*   Updated: 2018/04/24 22:59:03 by tkuhar           ###   ########.fr       */
+/*   Created: 2018/03/21 17:07:11 by tkuhar            #+#    #+#             */
+/*   Updated: 2018/03/21 17:07:14 by tkuhar           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef FT_PRINTF_H
-# define FT_PRINTF_H
+#include "libft.h"
 
-# include <stdio.h>
-# include <stdarg.h>
-# include <stdio.h>
-# include "./libft/libft.h"
+void		ft_putnbr_fd(int n, int fd)
+{
+	char	buf[12];
+	int		i;
+	int		pos;
 
-#endif
+	i = 9;
+	pos = 1;
+	ft_memset(buf, '\0', 12);
+	if (n < 0)
+		pos = -1;
+	buf[10] = (n % 10) * pos + 48;
+	n = n / (10 * pos);
+	while (n > 0)
+	{
+		buf[i--] = n % 10 + 48;
+		n = n / 10;
+	}
+	buf[i] = (pos != -1) ? '\0' : '-';
+	i = -1;
+	while (++i < 11)
+		if (buf[i] != '\0')
+			write(fd, &buf[i], 1);
+}

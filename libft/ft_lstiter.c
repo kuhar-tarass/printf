@@ -1,21 +1,25 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_printf.h                                        :+:      :+:    :+:   */
+/*   ft_lstiter.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: tkuhar <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2018/04/24 20:48:24 by tkuhar            #+#    #+#             */
-/*   Updated: 2018/04/24 22:59:03 by tkuhar           ###   ########.fr       */
+/*   Created: 2018/03/28 15:49:49 by tkuhar            #+#    #+#             */
+/*   Updated: 2018/03/28 15:49:58 by tkuhar           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef FT_PRINTF_H
-# define FT_PRINTF_H
+#include "libft.h"
 
-# include <stdio.h>
-# include <stdarg.h>
-# include <stdio.h>
-# include "./libft/libft.h"
+void	ft_lstiter(t_list *lst, void (*f)(t_list *elem))
+{
+	t_list *temp;
 
-#endif
+	while (lst && f)
+	{
+		temp = lst->next;
+		f(lst);
+		lst = temp;
+	}
+}

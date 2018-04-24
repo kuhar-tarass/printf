@@ -1,21 +1,29 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_printf.h                                        :+:      :+:    :+:   */
+/*   ft_strequ.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: tkuhar <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2018/04/24 20:48:24 by tkuhar            #+#    #+#             */
-/*   Updated: 2018/04/24 22:59:03 by tkuhar           ###   ########.fr       */
+/*   Created: 2018/03/25 16:43:48 by tkuhar            #+#    #+#             */
+/*   Updated: 2018/03/25 16:43:49 by tkuhar           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef FT_PRINTF_H
-# define FT_PRINTF_H
+int	ft_strequ(char const *s1, char const *s2)
+{
+	int i;
 
-# include <stdio.h>
-# include <stdarg.h>
-# include <stdio.h>
-# include "./libft/libft.h"
-
-#endif
+	i = 0;
+	if (!s1 || !s2)
+		return (0);
+	while (1)
+	{
+		if (!s1[i] || !s2[i])
+			return ((s1[i] - s2[i] == 0) ? 1 : 0);
+		if (s1[i] != s2[i])
+			return (0);
+		i++;
+	}
+	return (1);
+}

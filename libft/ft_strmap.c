@@ -1,21 +1,33 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_printf.h                                        :+:      :+:    :+:   */
+/*   ft_strmap.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: tkuhar <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2018/04/24 20:48:24 by tkuhar            #+#    #+#             */
-/*   Updated: 2018/04/24 22:59:03 by tkuhar           ###   ########.fr       */
+/*   Created: 2018/03/25 16:26:56 by tkuhar            #+#    #+#             */
+/*   Updated: 2018/03/25 16:26:57 by tkuhar           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef FT_PRINTF_H
-# define FT_PRINTF_H
+#include "libft.h"
 
-# include <stdio.h>
-# include <stdarg.h>
-# include <stdio.h>
-# include "./libft/libft.h"
+char		*ft_strmap(char const *s, char (*f)(char))
+{
+	char	*new;
+	int		i;
 
-#endif
+	i = 0;
+	if (!s || !f)
+		return (0);
+	new = (char *)malloc(sizeof(char) * ((int)ft_strlen(s) + 1));
+	if (!new)
+		return (0);
+	while (s[i] != '\0')
+	{
+		new[i] = f(s[i]);
+		i++;
+	}
+	new[i] = '\0';
+	return (new);
+}

@@ -6,20 +6,61 @@
 /*   By: tkuhar <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/04/23 11:56:34 by tkuhar            #+#    #+#             */
-/*   Updated: 2018/04/24 21:19:42 by tkuhar           ###   ########.fr       */
+/*   Updated: 2018/04/24 23:18:29 by tkuhar           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <stdio.h>
-#include <stdarg.h>
-#include <stdio.h>
 #include "ft_printf.h"
+
+
+int truflag(char c)
+{
+	char *s;
+
+	s = malloc(sizeof(char)* 15);
+	s = "sSpdDioOuUxXcC";
+	while (*s)
+		if (c == *s++)
+			return (1);
+
+	return (0);
+}
 
 int arg_parse(char *str)
 {	
 	int i;
+	int field;
+	int precision;
+	char size_spec;
 
-	while()
+
+	size_spec = 0;
+	field = 0;
+	precision = 0;
+	i = 0;
+	printf("%s\n", str);
+	while((str[i] == ' ' || str[i] == '0' || str[i] == '#' || str[i] == '+' || str[i] == '-') && str[i] != '\0')
+		i++;
+	if (str[i])
+	{
+		while(str[i] >= '0' && str[i] <= '9')
+			field = field * 10 + str[i++] - 48;
+		if (str[i] == '.')
+		{
+			i++;
+			while(str[i] >= '0' && str[i] <= '9')
+				precision = precision*10 + str[i++] - 48;
+		}
+		if (str[i] == 'h' || str[i] == 'l' || str[i] == 'z' || str[i] == 'j')
+		{
+			size_spec = str[i];
+			i++;
+		}
+		if (size_spec && str[i] == size_spec)
+			i++;
+		return (truflag(str[i]));
+	}
+	return (0);
 }
 
 int	ft_printf(char *str, ...)
@@ -30,12 +71,22 @@ int	ft_printf(char *str, ...)
 	while(*tmp)
 	{
 		if (*tmp == '%')
-			
+			;
 
 	}
-	
+	return(0);
 }
 
+int main ()
+{
+//	int a = 2845;
+	
+
+	
+	printf("%d\n", arg_parse("   # +-25.9ld"));
+	//printf("|% d|\n", a);
+	
+}
 /*
 int sum(int, ...);
 
@@ -59,11 +110,3 @@ int sum(int num_args, ...) {
 
 	return val;
 }*/
-int main ()
-{
-//	int a = 2845;
-	
-	printf("%          gfhjkl\n");
-	//printf("|% d|\n", a);
-	
-}

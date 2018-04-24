@@ -1,21 +1,29 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_printf.h                                        :+:      :+:    :+:   */
+/*   ft_lstpush_back.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: tkuhar <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2018/04/24 20:48:24 by tkuhar            #+#    #+#             */
-/*   Updated: 2018/04/24 22:59:03 by tkuhar           ###   ########.fr       */
+/*   Created: 2018/03/29 18:18:10 by tkuhar            #+#    #+#             */
+/*   Updated: 2018/04/12 14:20:15 by tkuhar           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef FT_PRINTF_H
-# define FT_PRINTF_H
+#include "libft.h"
 
-# include <stdio.h>
-# include <stdarg.h>
-# include <stdio.h>
-# include "./libft/libft.h"
+void	ft_lstpush_back(t_list **begin_list, void const *content,
+	size_t content_size)
+{
+	t_list	*tmp;
 
-#endif
+	if (!*begin_list)
+	{
+		*begin_list = ft_lstnew(content, content_size);
+		return ;
+	}
+	tmp = *begin_list;
+	while (tmp && tmp->next)
+		tmp = tmp->next;
+	tmp->next = ft_lstnew(content, content_size);
+}

@@ -1,21 +1,34 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_printf.h                                        :+:      :+:    :+:   */
+/*   ft_strstr.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: tkuhar <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2018/04/24 20:48:24 by tkuhar            #+#    #+#             */
-/*   Updated: 2018/04/24 22:59:03 by tkuhar           ###   ########.fr       */
+/*   Created: 2018/03/21 19:43:45 by tkuhar            #+#    #+#             */
+/*   Updated: 2018/03/21 19:43:47 by tkuhar           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef FT_PRINTF_H
-# define FT_PRINTF_H
+char	*ft_strstr(char *haystack, char *needle)
+{
+	int i;
+	int j;
 
-# include <stdio.h>
-# include <stdarg.h>
-# include <stdio.h>
-# include "./libft/libft.h"
-
-#endif
+	i = 0;
+	if (needle[0] == '\0')
+		return (haystack);
+	while (haystack[i] != '\0')
+	{
+		j = 0;
+		if (haystack[i] == needle[0])
+			while (haystack[i + j] == needle[j])
+			{
+				if (needle[j + 1] == '\0')
+					return (&haystack[i]);
+				j++;
+			}
+		i++;
+	}
+	return (0);
+}
