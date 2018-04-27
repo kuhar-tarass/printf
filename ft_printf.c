@@ -6,7 +6,7 @@
 /*   By: tkuhar <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/04/23 11:56:34 by tkuhar            #+#    #+#             */
-/*   Updated: 2018/04/24 23:18:29 by tkuhar           ###   ########.fr       */
+/*   Updated: 2018/04/27 19:32:54 by tkuhar           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,71 +22,121 @@ int truflag(char c)
 	while (*s)
 		if (c == *s++)
 			return (1);
-
 	return (0);
 }
 
-int arg_parse(char *str)
-{	
+t_key *arg_parse(char *str)
+{
 	int i;
-	int field;
-	int precision;
-	char size_spec;
+	t_key *k;
 
-
-	size_spec = 0;
-	field = 0;
-	precision = 0;
+	k = malloc(sizeof(t_key));
+	k->next = 0;
+	k->field = 0;
+	k->precision = 0;
+	k->size = 0;
+	k->space = 0;
+	k->zero = 0;
+	k->plus = 0;
+	k->minus = 0;
+	k->hash = 0;
 	i = 0;
-	printf("%s\n", str);
-	while((str[i] == ' ' || str[i] == '0' || str[i] == '#' || str[i] == '+' || str[i] == '-') && str[i] != '\0')
-		i++;
+	while(i++ >= 0)
+		if (str[i] == ' ')
+			k->space = 1;
+		else if (str[i] == '0')
+			k->zero = 1;
+		else if (str[i] == '-')
+			k->minus = 1;
+		else if (str[i] == '+')
+			k->plus = 1;
+		else if (str[i] == '#')
+			k->hash = 1;
+		else
+			break;
 	if (str[i])
 	{
 		while(str[i] >= '0' && str[i] <= '9')
-			field = field * 10 + str[i++] - 48;
+			k->field = k->field * 10 + str[i++] - 48;
 		if (str[i] == '.')
-		{
-			i++;
-			while(str[i] >= '0' && str[i] <= '9')
-				precision = precision*10 + str[i++] - 48;
-		}
+			while(str[++i] >= '0' && str[i] <= '9')
+				k->precision = k->precision * 10 + str[i++] - 48;
 		if (str[i] == 'h' || str[i] == 'l' || str[i] == 'z' || str[i] == 'j')
-		{
-			size_spec = str[i];
-			i++;
-		}
-		if (size_spec && str[i] == size_spec)
-			i++;
-		return (truflag(str[i]));
+			k->size = str[i++];
+		if (k->size && str[i] == k->size)
+			k->sizex2 = str[i++] ? 1 : 0;
+		k->typedata = truflag(str[i]) ? str[i] : 0;
 	}
-	return (0);
+	return (k->typedata ? k : 0);
+}
+
+
+void	addback(t_key **keys, t_key *new)
+{
+	t_key *tmp;
+
+	tmp = *keys;
+	while(tmp && tmp->next)
+		tmp = tmp->next;
+	if (tmp)
+		tmp->next = new;
+	else
+		*keys = new;
 }
 
 int	ft_printf(char *str, ...)
 {
-	char *tmp;
-	
+	char	*tmp;
+	t_key	*keys;
+
 	tmp  = str;
+	keys = 0;
 	while(*tmp)
 	{
 		if (*tmp == '%')
-			;
-
+			addback(&keys,arg_parse(tmp));
+		tmp++;
 	}
+	t_key 	*tmp1;
+	tmp1 = keys;
 	return(0);
 }
 
-int main ()
+int main (int ac, char **av)
 {
 //	int a = 2845;
 	
 
 	
-	printf("%d\n", arg_parse("   # +-25.9ld"));
-	//printf("|% d|\n", a);
+//	printf("%-15.5f\n", -i);
+//	printf("%08.9d\n", 12345);
+	//ft_printf(av[1]);
+	unsigned char s[3];
+	wchar_t value = 3002;
+	printf("	%s\n	%s\n", ft_itoa_base((unsigned int)value, 2), ft_itoa_base((((unsigned int)value)<<26)>>26, 2));
+	//printf("%015X\n", -i);
+
+	//printf("|%S|\n", "qwertyu");
 	
 }
+
+//	1110xxxx 10xxxxxx 10xxxxxx
+//	11100001 10001110 10001000
+//		255		142		136
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /*
 int sum(int, ...);
 

@@ -6,7 +6,7 @@
 /*   By: tkuhar <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/04/24 20:48:24 by tkuhar            #+#    #+#             */
-/*   Updated: 2018/04/25 14:02:58 by tkuhar           ###   ########.fr       */
+/*   Updated: 2018/04/27 21:47:03 by tkuhar           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,11 +20,21 @@
 
 typedef struct		l_key
 {
+	char			typedata;
 	int				field;
 	int				precision;
-	char			size_spec;
+	char			sizex2;
+	char			size;
+	char			space;
+	char			zero;
+	char			plus;
+	char			minus;
+	char			hash;
 	
 	struct l_key	*next;
 }					t_key;
+
+char				*ft_itoa_base(unsigned int n, int base);
+void				ft_putcharW(wchar_t c);
 
 #endif
