@@ -6,14 +6,14 @@
 /*   By: tkuhar <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/04/27 19:45:26 by tkuhar            #+#    #+#             */
-/*   Updated: 2018/04/27 22:09:14 by tkuhar           ###   ########.fr       */
+/*   Updated: 2018/04/30 21:39:07 by tkuhar           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_printf.h"
 #include <wchar.h>
 
-void	ft_putcharW(wchar_t c)
+char	*ft_getcharW(wchar_t c)
 {
 	unsigned char symb[4];
 
@@ -22,33 +22,32 @@ void	ft_putcharW(wchar_t c)
 		symb[0] = c;
 	else if (c < 2048)
 	{
-		symb[0] = (c >> 6 << 27 >> 27) | 192 ;
-		symb[1] = (c << 26 >> 26) | 128 ;
+		symb[0] = (c >> 6 & 31) | 192 ;
+		symb[1] = (c & 63) | 128 ;
 	}
 	else if (c < 65536)
 	{
-		symb[0] = (c >> 12 << 28 >> 28) | 224;
-		symb[1] = (c >> 6 << 27 >> 27) | 192 ;
-		symb[2] = c << 26 >> 26 | 128 ;
+		symb[0] = (c >> 12 & 15) | 224;
+		symb[1] = (c >> 6 & 63) | 192 ;
+		symb[2] = (c & 63) | 128 ;
 	}
 	else
 	{
-		symb[0] = (c >> 18 << 29 >> 29) | 224;
-		symb[1] = (c >> 12 << 28 >> 28) | 224;
-		symb[2] = (c >> 6 << 27 >> 27) | 192 ;
-		symb[3] = c << 26 >> 26 | 128 ;
+		symb[0] = (c >> 18 & 7) | 224;
+		symb[1] = (c >> 12 & 63) | 224;
+		symb[2] = (c >> 6 & 63) | 192 ;
+		symb[3] = (c & 63) | 128 ;
 	}
-	write(1, symb,ft_strlen((char *)symb));
+	return (ft_strsub(symb, 0, ft_strlen(symb)));
+	//write(1, symb,ft_strlen((char *)symb));
 }
 
-int	main(int ac, char **av)
+/*int	main(int ac, char **av)
 {
 	ft_putcharW(atoi(av[1]));
 	return (0);
-}
+}*/
 /*10
-
-
 	1111 1111 1111 1111 1111 1111 1111 1111
 	0000 0000 0000 0000 0000 0111 1111 1111
 			>> 6 
@@ -62,6 +61,4 @@ int	main(int ac, char **av)
 	1111 1100 0000 0000 0000 0000 0000 0000
 			>> 26 
 	0000 0000 0000 0000 0000 0000 0011 1111
-
-
 */

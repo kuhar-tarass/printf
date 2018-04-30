@@ -6,12 +6,12 @@
 /*   By: tkuhar <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/04/23 11:56:34 by tkuhar            #+#    #+#             */
-/*   Updated: 2018/04/27 19:32:54 by tkuhar           ###   ########.fr       */
+/*   Updated: 2018/04/30 21:49:59 by tkuhar           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_printf.h"
-
+#include <locale.h>
 
 int truflag(char c)
 {
@@ -24,8 +24,80 @@ int truflag(char c)
 			return (1);
 	return (0);
 }
+/*
+int	print_updiox(unsigned long int n, char sign, t_key *k)
+{
+	char	*b;
+	int		base;
+	size_t	size;
+	char	*zero;
+	char	*tmp;
 
-t_key *arg_parse(char *str)
+	b = ft_itoa_base(n, base);
+	size = ft_strlen(b);
+	if (k->precision > b)
+	{
+		zero = ft_strnew(k->precision - size);
+		ft_memset(zero, 48, k->precision - size);
+		tmp = ft_strjoin(zero, b);
+			return (0);
+		free(b);
+		free(zero);
+		b = tmp;
+	}
+	size = ft_strlen(b);
+	if (k->zero && !k->hash && k->field > size)
+	{
+		zero = ft_strnew(k->field - size);
+		ft_memset(zero, 48, k->field - size);
+		tmp = ft_strjoin(zero, b);
+			return (0);
+		free(b);
+		free(zero);
+		b = tmp;
+	}
+	if (base == 10 && sign)
+		write(1, "-", 1);
+	if (base == 16 && k->hash)
+		write(1, "0x", 1);
+	if (base == 8 && k->hash)
+		write(1, "0", 1);
+	write(1, b, ft_strlen(b));
+}
+*/
+
+int print_c(int c, t_key *k)
+{
+	int	space;
+
+	if (k->typedata == 'c')
+	{
+		if (k->field > 1)
+		{
+			space = k->field - 1;
+			while 
+		}
+	}
+	if (k->typedata == 'C')
+}
+void	print_s(char *s, t_key *k)
+{
+	int		i;
+	int		space;
+
+	if (k->precision == 0)
+		return (0);
+	i = ft_strlen(s);
+	space = k->field - i > 0 ? k->field - i	: 0;
+	while(space--)
+		write(1, " ", 1);
+	if (k->precision >= 0 && k->precision < i)
+		write(1, s, k->precision);
+	else
+		write(1, s, i);
+}
+
+t_key *arg_parse(char *s)
 {
 	int i;
 	t_key *k;
@@ -33,41 +105,40 @@ t_key *arg_parse(char *str)
 	k = malloc(sizeof(t_key));
 	k->next = 0;
 	k->field = 0;
-	k->precision = 0;
+	k->precision = -1;
 	k->size = 0;
-	k->space = 0;
-	k->zero = 0;
-	k->plus = 0;
-	k->minus = 0;
-	k->hash = 0;
 	i = 0;
-	while(i++ >= 0)
-		if (str[i] == ' ')
-			k->space = 1;
-		else if (str[i] == '0')
-			k->zero = 1;
-		else if (str[i] == '-')
-			k->minus = 1;
-		else if (str[i] == '+')
-			k->plus = 1;
-		else if (str[i] == '#')
-			k->hash = 1;
-		else
-			break;
-	if (str[i])
+	while(s[++i] == 32 || s[i] == 48 || s[i] == 45 || s[i] == 43 || s[i] == 35)
 	{
-		while(str[i] >= '0' && str[i] <= '9')
-			k->field = k->field * 10 + str[i++] - 48;
-		if (str[i] == '.')
-			while(str[++i] >= '0' && str[i] <= '9')
-				k->precision = k->precision * 10 + str[i++] - 48;
-		if (str[i] == 'h' || str[i] == 'l' || str[i] == 'z' || str[i] == 'j')
-			k->size = str[i++];
-		if (k->size && str[i] == k->size)
-			k->sizex2 = str[i++] ? 1 : 0;
-		k->typedata = truflag(str[i]) ? str[i] : 0;
+		k->space = k->space || s[i] == ' ' ? 1 : 0;
+		k->zero = k->zero || s[i] == '0' ? 1 : 0;
+		k->minus = k->minus || s[i] == '-' ? 1 : 0;
+		k->plus = k->plus || s[i] == '+' ? 1 : 0;
+		k->hash = k->hash || s[i] == '#' ? 1 : 0;
 	}
-	return (k->typedata ? k : 0);
+	if (s[i])
+	{
+		while(s[i] >= '0' && s[i] <= '9')
+			k->field = k->field * 10 + s[i++] - 48;
+		if (s[i] == '.')
+		{
+			k->precision = 0;
+			while(s[++i] >= '0' && s[i] <= '9')
+				k->precision = k->precision * 10 + s[i] - 48;
+		}
+		if (s[i] == 'h' || s[i] == 'l' || s[i] == 'z' || s[i] == 'j')
+			k->size = s[i++];
+		if (k->size && s[i] == k->size)
+			k->sizex2 = s[i++] ? 1 : 0;
+		k->typedata = truflag(s[i]) ? s[i] : 0;
+	}
+	if (k->typedata == 0)
+	{
+		free (k);
+		return (0);
+	}
+	k->skip = i;
+	return (k);
 }
 
 
@@ -84,59 +155,73 @@ void	addback(t_key **keys, t_key *new)
 		*keys = new;
 }
 
-int	ft_printf(char *str, ...)
+int		lstsize(t_key *l)
+{
+	int i;
+
+	i = 0;
+	while (l)
+	{
+		l = l->next;
+		i++;
+	}
+	return (i);
+}
+
+
+
+int	ft_printf(char *s, ...)
 {
 	char	*tmp;
 	t_key	*keys;
+	t_key	*tmpkeys;
+	va_list	ap;
+	int		i;
 
-	tmp  = str;
+	va_start(ap, s);
 	keys = 0;
+	tmp = s;
 	while(*tmp)
 	{
 		if (*tmp == '%')
 			addback(&keys,arg_parse(tmp));
 		tmp++;
 	}
+	i = 0;
+	tmpkeys = keys;
+	// /int size = lstsize(keys);
+	tmp = s;
+	while(i++ < lstsize(keys) && tmpkeys)
+	{
+		write(1, tmp, ft_strchr(tmp, '%') - tmp);
+		tmp = ft_strchr(tmp,'%') + tmpkeys->skip + 1;
+		if (tmpkeys->typedata == 's')
+			print_s(va_arg(ap, char *), tmpkeys);
+		if (tmpkeys->typedata == 'c')
+			print_c(va_arg(ap, int), tmpkeys);
+			
+		else
+			va_arg(ap, void *);
+		tmpkeys = tmpkeys->next;
+	}
+	write(1,tmp, ft_strlen(tmp));
 	t_key 	*tmp1;
 	tmp1 = keys;
 	return(0);
+	va_end(ap);
 }
 
 int main (int ac, char **av)
 {
-//	int a = 2845;
-	
-
-	
-//	printf("%-15.5f\n", -i);
-//	printf("%08.9d\n", 12345);
-	//ft_printf(av[1]);
-	unsigned char s[3];
-	wchar_t value = 3002;
-	printf("	%s\n	%s\n", ft_itoa_base((unsigned int)value, 2), ft_itoa_base((((unsigned int)value)<<26)>>26, 2));
-	//printf("%015X\n", -i);
-
-	//printf("|%S|\n", "qwertyu");
-	
+	//ft_printf("%  s   hfjgh %s", "123", "456");
+	//setlocale(LC_ALL, "");
+	//printf("%9C|\n %d|\n %9c|\n", (wchar_t)945, 123456789, 'a');
+	ft_printf("   |%.30s	%100.5s|", "123456789", "3456789");
 }
 
 //	1110xxxx 10xxxxxx 10xxxxxx
 //	11100001 10001110 10001000
-//		255		142		136
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
+//		255		142		13 
 /*
 int sum(int, ...);
 

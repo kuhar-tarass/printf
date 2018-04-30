@@ -6,20 +6,20 @@
 /*   By: tkuhar <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/04/25 16:44:34 by tkuhar            #+#    #+#             */
-/*   Updated: 2018/04/27 21:59:29 by tkuhar           ###   ########.fr       */
+/*   Updated: 2018/04/30 18:48:22 by tkuhar           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_printf.h"
 
-char *ft_itoa_base(unsigned int n, int base)
+char *ft_itoa_base(unsigned long int n, int base)
 {
-	char buf[33];
+	char buf[65];
 	char *ret;
 	int i;
 	int j;
 
-	ft_bzero(buf,33);
+	ft_bzero(buf,65);
 	j = 0;
 	*buf = n == 0 ? 48 : 0;
 	while(n > 0)
@@ -36,10 +36,4 @@ char *ft_itoa_base(unsigned int n, int base)
 			ret[j - i - 1] = buf[i];
 	}
 	return (ret);
-}
-
-
-int main()
-{
-
 }
