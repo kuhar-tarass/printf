@@ -6,7 +6,7 @@
 /*   By: tkuhar <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/04/23 11:56:34 by tkuhar            #+#    #+#             */
-/*   Updated: 2018/04/30 21:49:59 by tkuhar           ###   ########.fr       */
+/*   Updated: 2018/05/01 20:35:01 by tkuhar           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,35 +66,87 @@ int	print_updiox(unsigned long int n, char sign, t_key *k)
 }
 */
 
-int print_c(int c, t_key *k)
-{
-	int	space;
 
-	if (k->typedata == 'c')
-	{
-		if (k->field > 1)
-		{
-			space = k->field - 1;
-			while 
-		}
-	}
-	if (k->typedata == 'C')
-}
-void	print_s(char *s, t_key *k)
+char	*strinsert(char **dst, char *src, int index)
 {
 	int		i;
-	int		space;
+	char	*tmp;
+	int		dstl;
 
-	if (k->precision == 0)
+	dstl = ft_strlen(*dst);
+	if (dst == 0 || !(tmp = ft_strnew(dstl + ft_strlen(src))) || index > dstl)
 		return (0);
-	i = ft_strlen(s);
-	space = k->field - i > 0 ? k->field - i	: 0;
-	while(space--)
-		write(1, " ", 1);
-	if (k->precision >= 0 && k->precision < i)
-		write(1, s, k->precision);
-	else
-		write(1, s, i);
+	i = -1;
+	while (++i < index)
+		tmp[i] = (*dst)[i];
+	while (*src)
+		tmp[i++] = *src++;
+	while (index < dstl)
+		tmp[i++] = (*dst)[index++];
+	free(*dst);
+	return (tmp);
+}
+
+void	spaaacesorzeeeros(char **s, t_key *k)
+{
+	int		f;
+	char	*buf;
+
+	f = (((k->field - (int)ft_strlen(*s)) > 0) ? (k->field - (int)ft_strlen(*s)) : 0);
+	buf = ft_strnew(f + 1);
+	ft_bzero(buf, f + 1);
+	if ((k->typedata == 'c' || k->typedata == 'C' || k->typedata == 's' || k->typedata == 'S' ) && f)
+	{
+		buf = ft_memset(buf, ' ', f);
+		*s = strinsert(s, buf, 0);
+		free (buf);
+		return ;
+	}
+}
+
+void	left(char **s, t_key *k)
+{
+	int		i;
+	char	*tmp;
+	char	*tmp2;
+
+	i = 0;
+	while ((*s)[i] == ' ')
+		i++;
+	if (k->space)
+		i--;
+	tmp = ft_strsub(*s, i, ft_strlen(&(*s)[i]));
+	tmp2 = ft_strsub(*s, 0, i);
+	tmp = strinsert(&tmp, tmp2, ft_strlen(tmp) - 1);
+	free(tmp2);
+	free(*s);
+	*s = tmp;
+}
+
+/*char	*print_c(int c, t_key *k)
+{
+	char	*tmp;
+
+	tmp = ft_getcharW(c);
+	spaaacesorzeeeros(&tmp, k);
+	if (k->minus)
+		left(&tmp, k);
+	//write(1, tmp, ft_strlen(tmp));
+	//free(tmp);
+	return(tmp);
+}*/
+
+char	*print_s(char *s, t_key *k)
+{
+	char	*tmp;
+	int		size;
+
+	size = k->precision - ft_strlen(s) > 0 ? ft_strlen(s) : k->precision; 
+	tmp = ft_strsub(s, 0, size);
+	spaaacesorzeeeros(&tmp,k);
+	if (k->minus)
+		left(&tmp,k);
+	return (tmp);
 }
 
 t_key *arg_parse(char *s)
@@ -197,18 +249,15 @@ int	ft_printf(char *s, ...)
 		tmp = ft_strchr(tmp,'%') + tmpkeys->skip + 1;
 		if (tmpkeys->typedata == 's')
 			print_s(va_arg(ap, char *), tmpkeys);
-		if (tmpkeys->typedata == 'c')
-			print_c(va_arg(ap, int), tmpkeys);
-			
 		else
 			va_arg(ap, void *);
+		/*if (tmpkeys->typedata == 'c')
+			print_c(va_arg(ap, int), tmpkeys);*/
 		tmpkeys = tmpkeys->next;
 	}
 	write(1,tmp, ft_strlen(tmp));
-	t_key 	*tmp1;
-	tmp1 = keys;
+	//va_end(ap);
 	return(0);
-	va_end(ap);
 }
 
 int main (int ac, char **av)
@@ -216,7 +265,8 @@ int main (int ac, char **av)
 	//ft_printf("%  s   hfjgh %s", "123", "456");
 	//setlocale(LC_ALL, "");
 	//printf("%9C|\n %d|\n %9c|\n", (wchar_t)945, 123456789, 'a');
-	ft_printf("   |%.30s	%100.5s|", "123456789", "3456789");
+	ft_printf("   |%s    |", "123456789");
+	exit (0);
 }
 
 //	1110xxxx 10xxxxxx 10xxxxxx

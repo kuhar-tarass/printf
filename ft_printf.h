@@ -6,7 +6,7 @@
 /*   By: tkuhar <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/04/24 20:48:24 by tkuhar            #+#    #+#             */
-/*   Updated: 2018/04/30 21:42:57 by tkuhar           ###   ########.fr       */
+/*   Updated: 2018/05/01 20:08:37 by tkuhar           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,8 +23,8 @@ typedef struct		l_key
 	struct l_key	*next;
 	
 	char			typedata;
-	size_t			field;
-	size_t			precision;
+	int			field;
+	int			precision;
 	int				skip;
 	char			space;
 	char			zero;
@@ -37,7 +37,7 @@ typedef struct		l_key
 }					t_key;
 
 char				*ft_itoa_base(unsigned long int n, int base);
-char				*ft_getcharW(wchar_t c);
+unsigned char		*ft_getcharW(wchar_t c);
 char				*ft_getstrW(wchar_t const *s);
 
 #endif
