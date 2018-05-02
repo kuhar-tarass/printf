@@ -6,7 +6,7 @@
 /*   By: tkuhar <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/04/23 11:56:34 by tkuhar            #+#    #+#             */
-/*   Updated: 2018/05/01 20:35:01 by tkuhar           ###   ########.fr       */
+/*   Updated: 2018/05/02 23:30:01 by tkuhar           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,16 +91,21 @@ void	spaaacesorzeeeros(char **s, t_key *k)
 {
 	int		f;
 	char	*buf;
+	int		lens;
 
-	f = (((k->field - (int)ft_strlen(*s)) > 0) ? (k->field - (int)ft_strlen(*s)) : 0);
+	lens = (int)ft_strlen(*s);
+	f = (((k->field - lens) > 0) ? (k->field - lens) : 0);
 	buf = ft_strnew(f + 1);
-	ft_bzero(buf, f + 1);
 	if ((k->typedata == 'c' || k->typedata == 'C' || k->typedata == 's' || k->typedata == 'S' ) && f)
 	{
 		buf = ft_memset(buf, ' ', f);
 		*s = strinsert(s, buf, 0);
 		free (buf);
 		return ;
+	}
+	if (k->typedata == 'x' || k->typedata == 'X')
+	{
+		buf = ft_memset()
 	}
 }
 
@@ -113,52 +118,100 @@ void	left(char **s, t_key *k)
 	i = 0;
 	while ((*s)[i] == ' ')
 		i++;
-	if (k->space)
+	if ((int)k->space == 1)
 		i--;
 	tmp = ft_strsub(*s, i, ft_strlen(&(*s)[i]));
 	tmp2 = ft_strsub(*s, 0, i);
-	tmp = strinsert(&tmp, tmp2, ft_strlen(tmp) - 1);
+	tmp = strinsert(&tmp, tmp2, ft_strlen(tmp));
 	free(tmp2);
 	free(*s);
 	*s = tmp;
 }
 
-/*char	*print_c(int c, t_key *k)
+void	addzero(char **s, t_key *k)
 {
+	int		size;
+	char	*zeros;
 	char	*tmp;
 
-	tmp = ft_getcharW(c);
+	size = k->precision - (int)ft_strlen(*s);
+	zeros = ft_strnew(size + 1);
+	zeros = ft_memset(zeros, '0', size);
+	*s = strinsert(s, zeros, 0);
+	free(zeros);
+}
+
+char	*print_c(int wchr, t_key *k)
+{
+	char	*tmp;
+	int 	c;
+
+	c = wchr;
+	tmp = (char *)ft_getcharW(c);
 	spaaacesorzeeeros(&tmp, k);
 	if (k->minus)
 		left(&tmp, k);
-	//write(1, tmp, ft_strlen(tmp));
-	//free(tmp);
 	return(tmp);
-}*/
+}
 
 char	*print_s(char *s, t_key *k)
 {
 	char	*tmp;
 	int		size;
+	int		lens;
 
-	size = k->precision - ft_strlen(s) > 0 ? ft_strlen(s) : k->precision; 
+	
+	lens = (int)ft_strlen(s);
+	size = lens;
+	if (k->precision >= 0)
+		size = ((lens - k->precision) >= 0) ? k->precision : lens;
 	tmp = ft_strsub(s, 0, size);
 	spaaacesorzeeeros(&tmp,k);
-	if (k->minus)
+	if (k->minus == 1)
 		left(&tmp,k);
 	return (tmp);
 }
 
-t_key *arg_parse(char *s)
+char	*print_S(int *ws, t_key *k)
 {
-	int i;
-	t_key *k;
+	char	*tmp;
+	int		size;
+	int		lens;
+	char	*s;
+	
+	s = (char *)ft_getstrW(ws);
+	lens = (int)ft_strlen(s);
+	size = lens;
+	tmp = ft_strsub(s, 0, size);
+	spaaacesorzeeeros(&tmp,k);
+	if (k->minus == 1)
+		left(&tmp,k);
+	free(s);
+	return (tmp);
+}
 
-	k = malloc(sizeof(t_key));
-	k->next = 0;
-	k->field = 0;
-	k->precision = -1;
-	k->size = 0;
+char	*print_x(unsigned long n, t_key *k)
+{
+	char	*tmp;
+	char	*tmpzero;
+
+	tmp = ft_itoa_base(n, 16);	
+	if (k->precision > (int)ft_strlen(tmp))
+		addzero(&tmp,k);
+	if (k->hash == 1)
+		tmp = strinsert(&tmp,"")
+	
+}
+
+int		flag_parse(char *s, t_key *k)
+{
+	int	i;
+
+	k->space = 0;
+	k->zero = 0;
+	k->minus = 0;
+	k->plus = 0;
+	k->hash = 0;
 	i = 0;
 	while(s[++i] == 32 || s[i] == 48 || s[i] == 45 || s[i] == 43 || s[i] == 35)
 	{
@@ -168,31 +221,38 @@ t_key *arg_parse(char *s)
 		k->plus = k->plus || s[i] == '+' ? 1 : 0;
 		k->hash = k->hash || s[i] == '#' ? 1 : 0;
 	}
+	return (i);
+}
+
+t_key	*arg_parse(char *s)
+{
+	int i;
+	t_key *k;
+
+	k = malloc(sizeof(t_key));
+	k->next = 0;
+	k->field = 0;
+	k->precision = -1;
+	k->size = 0;
+	i = flag_parse(s,k);
 	if (s[i])
 	{
 		while(s[i] >= '0' && s[i] <= '9')
 			k->field = k->field * 10 + s[i++] - 48;
-		if (s[i] == '.')
-		{
-			k->precision = 0;
+		if (s[i] == '.' && !(k->precision = 0))
 			while(s[++i] >= '0' && s[i] <= '9')
 				k->precision = k->precision * 10 + s[i] - 48;
-		}
 		if (s[i] == 'h' || s[i] == 'l' || s[i] == 'z' || s[i] == 'j')
 			k->size = s[i++];
-		if (k->size && s[i] == k->size)
-			k->sizex2 = s[i++] ? 1 : 0;
+		k->sizex2 = (k->size && s[i++] == k->size) ? 1 : 0;
 		k->typedata = truflag(s[i]) ? s[i] : 0;
 	}
-	if (k->typedata == 0)
-	{
-		free (k);
-		return (0);
-	}
 	k->skip = i;
-	return (k);
+	if (k->typedata != 0)
+		return (k);
+	free (k);
+	return (0);
 }
-
 
 void	addback(t_key **keys, t_key *new)
 {
@@ -220,15 +280,15 @@ int		lstsize(t_key *l)
 	return (i);
 }
 
-
-
 int	ft_printf(char *s, ...)
 {
 	char	*tmp;
+	unsigned char	*tm2;
 	t_key	*keys;
 	t_key	*tmpkeys;
 	va_list	ap;
 	int		i;
+	int		lsts;
 
 	va_start(ap, s);
 	keys = 0;
@@ -241,31 +301,42 @@ int	ft_printf(char *s, ...)
 	}
 	i = 0;
 	tmpkeys = keys;
-	// /int size = lstsize(keys);
 	tmp = s;
-	while(i++ < lstsize(keys) && tmpkeys)
+	lsts = lstsize(keys);
+	while(i++ < lsts && tmpkeys)
 	{
 		write(1, tmp, ft_strchr(tmp, '%') - tmp);
 		tmp = ft_strchr(tmp,'%') + tmpkeys->skip + 1;
 		if (tmpkeys->typedata == 's')
-			print_s(va_arg(ap, char *), tmpkeys);
+			tm2 = (unsigned char*)print_s(va_arg(ap, char *), tmpkeys);
+		else if (tmpkeys->typedata == 'S')
+			tm2 = (unsigned char*)print_S(va_arg(ap, int *), tmpkeys);
+		else if (tmpkeys->typedata == 'c' || tmpkeys->typedata == 'C')
+			tm2 = (unsigned char*)print_c(va_arg(ap, int),tmpkeys);
 		else
 			va_arg(ap, void *);
-		/*if (tmpkeys->typedata == 'c')
-			print_c(va_arg(ap, int), tmpkeys);*/
 		tmpkeys = tmpkeys->next;
+		if (tm2 != 0)
+			write(1, tm2, ft_strlen((char*)tm2));
+		free(tm2);
+		tm2 = 0;
 	}
-	write(1,tmp, ft_strlen(tmp));
-	//va_end(ap);
+	write(1,tmp, ft_strlen((char*)tmp));
+	va_end(ap);
 	return(0);
 }
 
 int main (int ac, char **av)
 {
 	//ft_printf("%  s   hfjgh %s", "123", "456");
-	//setlocale(LC_ALL, "");
-	//printf("%9C|\n %d|\n %9c|\n", (wchar_t)945, 123456789, 'a');
-	ft_printf("   |%s    |", "123456789");
+	setlocale(LC_ALL, "");
+	int or;
+	int	ft;
+	int s[5] = {945,945,945,945,0};
+	
+	or = printf		("or	|### |%-20.5s| ### ±%-10S±|\n", "123456789", s);
+	ft = ft_printf	("ft	|### |%-20.5s| ### ±%-10S±|\n", "123456789", s);
+	printf("or = %d\nft = %d", or, ft);
 	exit (0);
 }
 
