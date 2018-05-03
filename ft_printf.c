@@ -6,7 +6,7 @@
 /*   By: tkuhar <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/04/23 11:56:34 by tkuhar            #+#    #+#             */
-/*   Updated: 2018/05/02 23:30:01 by tkuhar           ###   ########.fr       */
+/*   Updated: 2018/05/03 22:36:51 by tkuhar           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,6 +87,7 @@ char	*strinsert(char **dst, char *src, int index)
 	return (tmp);
 }
 
+// Need to rewrite
 void	spaaacesorzeeeros(char **s, t_key *k)
 {
 	int		f;
@@ -103,9 +104,47 @@ void	spaaacesorzeeeros(char **s, t_key *k)
 		free (buf);
 		return ;
 	}
-	if (k->typedata == 'x' || k->typedata == 'X')
+	if (k->typedata == 'x' || k->typedata == 'X' || k->typedata == 'p')
 	{
-		buf = ft_memset()
+		if (k->precision == -1 && k->zero == 1 && k->minus == 0)
+		{
+			buf = ft_memset(buf, '0', f);
+			*s = strinsert(s,buf,k->hash ? 2 : 0);
+			free (buf);
+			return ;
+		}
+		buf = ft_memset(buf, ' ', f);
+		*s = strinsert(s, buf, 0);
+		free (buf);
+		return ;
+	}
+	if (k->typedata == 'o' || k->typedata == 'O')
+	{
+		if (k->precision == -1 && k->zero == 1 && k->minus == 0)
+		{
+			buf = ft_memset(buf, '0', f);
+			*s = strinsert(s,buf,k->hash ? 1 : 0);
+			free (buf);
+			return ;
+		}
+		buf = ft_memset(buf, ' ', f);
+		*s = strinsert(s, buf, 0);
+		free (buf);
+		return ;
+	}
+	if (k->typedata == 'd' || k->typedata == 'i')
+	{
+		if (k->precision == -1 && k->zero == 1 && k->minus == 0)
+		{
+			buf = ft_memset(buf, '0', f);
+			*s = strinsert(s, buf, **s == ' ' || **s == '-' || **s == '+' ? 1 : 0);
+			free (buf);
+			return ;
+		}
+		buf = ft_memset(buf, ' ', f);
+		*s = strinsert(s, buf, 0);
+		free (buf);
+		return ;
 	}
 }
 
@@ -171,7 +210,7 @@ char	*print_s(char *s, t_key *k)
 		left(&tmp,k);
 	return (tmp);
 }
-
+// May be merged
 char	*print_S(int *ws, t_key *k)
 {
 	char	*tmp;
@@ -194,13 +233,65 @@ char	*print_x(unsigned long n, t_key *k)
 {
 	char	*tmp;
 	char	*tmpzero;
+	char	*counter;
 
-	tmp = ft_itoa_base(n, 16);	
+	tmp = ft_itoa_base(n, 16);
 	if (k->precision > (int)ft_strlen(tmp))
 		addzero(&tmp,k);
-	if (k->hash == 1)
-		tmp = strinsert(&tmp,"")
-	
+	if (k->hash == 1 || k->typedata == 'p')
+		tmp = strinsert(&tmp,"0x",0);
+	if (k->field - (int)ft_strlen(tmp) > 0)
+		spaaacesorzeeeros(&tmp,k);
+	if (k->minus == 1)
+		left(&tmp, k);
+	counter = tmp;
+	if (k->typedata == 'X')
+		while(*counter)
+		{
+			*counter = ft_toupper(*counter);
+			counter++;
+		}
+	return (tmp);
+}
+// May be merged with print_x/ print_o
+char	*print_o(unsigned long n, t_key *k)
+{
+	char	*tmp;
+	char	*tmpzero;
+	int		fuckzero;
+
+	tmp = ft_itoa_base(n, 8);
+	fuckzero = (int)ft_strlen(tmp);
+	if (k->precision > (int)ft_strlen(tmp))
+		addzero(&tmp,k);
+	if (k->hash == 1 && k->precision <= fuckzero)
+		tmp = strinsert(&tmp,"0",0);
+	if (k->field - (int)ft_strlen(tmp) > 0)
+		spaaacesorzeeeros(&tmp,k);
+	if (k->minus == 1)
+		left(&tmp, k);
+	return (tmp);
+}
+
+char	*print_di(unsigned long n, t_key *k)
+{
+	char	*tmp;
+	char	sign;
+
+	printf(">>%lu<<", (n));
+	sign = ((unsigned long)1 << 63 & n) != 0 ? '-' : '+';
+	tmp = ft_itoa_base((sign == '-' ? (~n + 1) : n), 10);
+	if (k->precision > (int)ft_strlen(tmp))
+		addzero(&tmp,k);
+	if (k->plus || sign == '-')
+		tmp = strinsert(&tmp, sign == '-' ? "-" : "+", 0);
+	else if (k->space == 1)
+		tmp = strinsert(&tmp, " ", 0);
+	if (k->field - (int)ft_strlen(tmp) > 0)
+		spaaacesorzeeeros(&tmp,k);
+	if (k->minus == 1)
+		left(&tmp, k);
+	return (tmp);
 }
 
 int		flag_parse(char *s, t_key *k)
@@ -283,7 +374,7 @@ int		lstsize(t_key *l)
 int	ft_printf(char *s, ...)
 {
 	char	*tmp;
-	unsigned char	*tm2;
+	unsigned char	*tm2 = 0;
 	t_key	*keys;
 	t_key	*tmpkeys;
 	va_list	ap;
@@ -313,6 +404,12 @@ int	ft_printf(char *s, ...)
 			tm2 = (unsigned char*)print_S(va_arg(ap, int *), tmpkeys);
 		else if (tmpkeys->typedata == 'c' || tmpkeys->typedata == 'C')
 			tm2 = (unsigned char*)print_c(va_arg(ap, int),tmpkeys);
+		else if (tmpkeys->typedata == 'x' || tmpkeys->typedata == 'X' || tmpkeys->typedata == 'p')
+			tm2 = (unsigned char *)print_x(va_arg(ap, unsigned long),tmpkeys);
+		else if (tmpkeys->typedata == 'o' || tmpkeys->typedata == 'O')
+			tm2 = (unsigned char *)print_o(va_arg(ap, unsigned long),tmpkeys);
+		else if (tmpkeys->typedata == 'i' || tmpkeys->typedata == 'd')
+			tm2 = (unsigned char *)print_di(va_arg(ap, unsigned long),tmpkeys);
 		else
 			va_arg(ap, void *);
 		tmpkeys = tmpkeys->next;
@@ -328,41 +425,16 @@ int	ft_printf(char *s, ...)
 
 int main (int ac, char **av)
 {
-	//ft_printf("%  s   hfjgh %s", "123", "456");
 	setlocale(LC_ALL, "");
-	int or;
+	int	or;
 	int	ft;
-	int s[5] = {945,945,945,945,0};
-	
-	or = printf		("or	|### |%-20.5s| ### ±%-10S±|\n", "123456789", s);
-	ft = ft_printf	("ft	|### |%-20.5s| ### ±%-10S±|\n", "123456789", s);
-	printf("or = %d\nft = %d", or, ft);
+	int	s[5] = {945,946,947,948,0};
+	unsigned long lo = 30;
+	or = printf		("or	§% -5d§|\n", -1);
+	ft = ft_printf	("ft	§% -5d§|\n", -1);
 	exit (0);
 }
 
 //	1110xxxx 10xxxxxx 10xxxxxx
 //	11100001 10001110 10001000
 //		255		142		13 
-/*
-int sum(int, ...);
-
-int main(void) {
-   printf("Sum of 10, 20 and 30 = %d\n",  sum(3, 10, 20, 30) );
-   printf("Sum of 4, 20, 25 and 30 = %d\n",  sum(4, 4, 20, 25, 30) );
-
-   return 0;
-}
-
-int sum(int num_args, ...) {
-   int val = 0;
-   va_list ap;
-   int i;
-
-   va_start(ap, num_args);
-   for(i = 0; i < num_args; i++) {
-		val += va_arg(ap, int);
-	}
-	va_end(ap);
-
-	return val;
-}*/
