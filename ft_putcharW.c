@@ -6,32 +6,12 @@
 /*   By: tkuhar <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/04/27 19:45:26 by tkuhar            #+#    #+#             */
-/*   Updated: 2018/05/01 19:52:17 by tkuhar           ###   ########.fr       */
+/*   Updated: 2018/05/04 16:20:20 by tkuhar           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_printf.h"
 #include <wchar.h>
-
-static unsigned char *ft_u_strsub(unsigned char const *s, unsigned int start, size_t len)
-{
-	size_t	i;
-	unsigned char	*sub;
-
-	i = 0;
-	if (!s)
-		return (0);
-	sub = (unsigned char *)malloc(sizeof(char) * (len + 1));
-	if (!sub)
-		return (0);
-	while (i < len)
-	{
-		sub[i] = s[start + i];
-		i++;
-	}
-	sub[i] = '\0';
-	return (sub);
-}
 
 unsigned char	*ft_getcharW(wchar_t c)
 {
@@ -58,8 +38,8 @@ unsigned char	*ft_getcharW(wchar_t c)
 		symb[2] = (c >> 6 & 63) | 192 ;
 		symb[3] = (c & 63) | 128 ;
 	}
-	return (ft_u_strsub(symb, 0, ft_strlen((char *)symb)));
-	//write(1, symb,ft_strlen((char *)symb));
+	return ((unsigned char *)ft_strsub((char *)symb, 0, 
+		ft_strlen((char *)symb)));
 }
 
 /*int	main(int ac, char **av)
