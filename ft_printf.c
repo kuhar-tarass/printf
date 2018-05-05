@@ -6,7 +6,7 @@
 /*   By: tkuhar <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/04/23 11:56:34 by tkuhar            #+#    #+#             */
-/*   Updated: 2018/05/04 16:50:47 by tkuhar           ###   ########.fr       */
+/*   Updated: 2018/05/05 10:59:57 by tkuhar           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,13 +15,10 @@
 
 int		truflag(char c)
 {
-	char *s;
-
-	s = malloc(sizeof(char)* 15);
-	s = "sSpdDioOuUxXcC";
-	while (*s)
-		if (c == *s++)
-			return (1);
+	if (c == 's' || c == 'S' || c == 'p' || c == 'd' || c == 'D' ||
+		c == 'i' || c == 'o' || c == 'O' || c == 'u' || c == 'U' ||
+		c == 'x' || c == 'X' || c == 'c' || c == 'C' || c == '%')
+		return (1);
 	return (0);
 }
 
@@ -114,7 +111,7 @@ char	*print_c(int wchr, t_key *k)
 }
 
 // Was merged
-/*
+/* 
 char	*print_s(char *s, t_key *k)
 {
 	char	*tmp;
@@ -140,6 +137,7 @@ char	*print_S(int *ws, t_key *k)
 	int		lens;
 	char	*s;
 	
+//	system("leaks a.out");
 	s = CONV == 'S' ? (char *)ft_getstrW(ws) : ft_strjoin(0,(char *)ws);
 	lens = (int)ft_strlen(s);
 	size = lens;
@@ -152,8 +150,6 @@ char	*print_S(int *ws, t_key *k)
 	free(s);
 	return (tmp);
 }
-
-
 
 char	*print_xo(unsigned long n, t_key *k)
 {
@@ -263,7 +259,6 @@ t_key	*arg_parse(char *s)
 	t_key *k;
 
 	k = malloc(sizeof(t_key));
-	k->next = 0;
 	WIDTH = 0;
 	PREC = -1;
 	SMOD = 0;
@@ -284,6 +279,7 @@ t_key	*arg_parse(char *s)
 	return (0);
 }
 
+/*
 void	addback(t_key **keys, t_key *new)
 {
 	t_key *tmp;
@@ -297,6 +293,7 @@ void	addback(t_key **keys, t_key *new)
 		*keys = new;
 }
 
+
 int		lstsize(t_key *l)
 {
 	int i;
@@ -309,8 +306,80 @@ int		lstsize(t_key *l)
 	}
 	return (i);
 }
-
+*/
 int		ft_printf(char *s, ...)
+{
+	va_list			ap;
+	t_key			*k;
+	unsigned char	*tmp;
+	int				ret;
+	int				i;
+	char			*symb;
+	char			*start;
+
+	va_start(ap, s);
+	ret = 0;
+	start = s;
+	while (1)
+	{
+		symb = ft_strchr(s, '%');
+		if (!symb)
+			break;
+		i = symb - s;
+		write(1, s, i);
+		k = arg_parse(&s[i]);
+		ret += i;
+		s = s + i + SKIP + 1;
+		if (!k)
+			return (-1);
+		if (CONV == 'S' || CONV == 's')
+			tmp = (unsigned char *)print_S(va_arg(ap, int *), k);
+		else if (CONV == 'c' || CONV == 'C' || CONV == '%')
+			tmp = (unsigned char *)print_c(CONV == '%' ? '%':va_arg(ap, int), k);
+		else if (CONV == 'x' || CONV == 'X' || CONV == 'p' || CONV == 'o' || CONV == 'O')
+			tmp = (unsigned char *)print_xo(va_arg(ap, unsigned long),k);
+		else if (CONV == 'i' || CONV == 'd')
+		{
+			if (SMOD == 'l')
+				tmp = (unsigned char *)print_di(va_arg(ap, long ),k);
+			else 
+				tmp = (unsigned char *)print_di((long)va_arg(ap, int ),k);
+		}
+		else if (CONV == 'u')
+				tmp = (unsigned char *)print_u((long)va_arg(ap, int ),k);
+		else 
+			break;
+		i = ft_strlen((char*)tmp);
+		ret += i;
+		write(1, tmp, i);
+		free (tmp);
+		free (k);
+	}
+	va_end(ap);
+	i = ft_strlen((char*)s);
+	ret += i;
+	write(1, s, i);
+	return (ret);
+}
+/*
+int main (int ac, char **av)
+{
+	setlocale(LC_ALL, "");
+	int	or;
+	int	ft;
+
+	or = printf		("or%s	§%#x§%C|\n","123",12333, 947);
+	//ft = ft_printf	("ft%s	§%#x§%C|\n","123",12333, 947);
+	printf("or	%d\n", or);
+	//printf("ft	%d\n", ft);
+	//system("leaks a.out");
+	return (0);
+
+}
+*/
+/*
+
+int		ft_printf2(char *s, ...)
 {
 	char	*tmp;
 	unsigned char	*tm2 = 0;
@@ -364,16 +433,4 @@ int		ft_printf(char *s, ...)
 	va_end(ap);
 	return(0);
 }
-
-int main (int ac, char **av)
-{
-	setlocale(LC_ALL, "");
-	int	or;
-	int	ft;
-
-	unsigned long lo = 30;
-	
-	or = printf		("or	§%-100s§|\n", "945");
-	ft = ft_printf	("ft	§%-100s§|\n", "945");
-	exit (0);
-}
+*/

@@ -6,7 +6,7 @@
 /*   By: tkuhar <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/04/24 20:48:24 by tkuhar            #+#    #+#             */
-/*   Updated: 2018/05/04 15:07:54 by tkuhar           ###   ########.fr       */
+/*   Updated: 2018/05/04 18:45:06 by tkuhar           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,9 +30,7 @@
 # include "./libft/libft.h"
 
 typedef struct		l_key
-{
-	struct l_key	*next;
-	
+{	
 	char			typedata;
 	int				width;
 	int				precision;
@@ -52,3 +50,4 @@ unsigned char		*ft_getcharW(wchar_t c);
 char				*ft_getstrW(wchar_t const *s);
 
 #endif
+//	s = {'s','S','p','d','D','i','o','O','u','U','x','X','c','C',0};
