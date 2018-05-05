@@ -6,14 +6,14 @@
 /*   By: tkuhar <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/04/23 11:56:34 by tkuhar            #+#    #+#             */
-/*   Updated: 2018/05/05 10:59:57 by tkuhar           ###   ########.fr       */
+/*   Updated: 2018/05/05 21:18:37 by tkuhar           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_printf.h"
-#include <locale.h>
 
-int		truflag(char c)
+int count;
+static int		truflag(char c)
 {
 	if (c == 's' || c == 'S' || c == 'p' || c == 'd' || c == 'D' ||
 		c == 'i' || c == 'o' || c == 'O' || c == 'u' || c == 'U' ||
@@ -42,7 +42,6 @@ char	*strinsert(char **dst, char *src, int index)
 	return (tmp);
 }
 
-// the are some variants. may be more compact
 void	spaaacesorzeeeros(char **s, t_key *k)
 {
 	int		f;
@@ -52,13 +51,13 @@ void	spaaacesorzeeeros(char **s, t_key *k)
 	lens = (int)ft_strlen(*s);
 	f = (((WIDTH - lens) > 0) ? (WIDTH - lens) : 0);
 	buf = ft_strnew(f + 1);
-	buf = ft_memset(buf, (PREC == -1 && ZERO && !LEFT) ? '0' : ' ', f);
+	buf = ft_memset(buf, (PREC == -1 && ZERO) ? '0' : ' ', f);
 	if (CONV == 'x' || CONV == 'X' || CONV == 'p')
-		*s = strinsert(s,buf,HASH ? 2 : 0);
+		*s = strinsert(s,buf, (HASH && ZERO) ? 2 : 0);
 	else if (CONV == 'o' || CONV == 'O')
-		*s = strinsert(s,buf,HASH ? 1 : 0);
+		*s = strinsert(s,buf,HASH && ZERO ? 1 : 0);
 	else if (CONV == 'd' || CONV == 'i')
-		*s = strinsert(s, buf, **s == ' ' || **s == '-' || **s == '+' ? 1 : 0);
+		*s = strinsert(s, buf, (**s == ' ' || **s == '-' || **s == '+') && ZERO ? 1 : 0);
 	else
 		*s = strinsert(s, buf, 0);
 	free (buf);
@@ -74,7 +73,7 @@ void	left(char **s, t_key *k)
 	i = 0;
 	while ((*s)[i] == ' ')
 		i++;
-	if (SPACE == 1 && SIGN == 0)
+	if (SPACE == 1 && i && SIGN == 0 && CONV != '%')
 		i--;
 	tmp = ft_strsub(*s, i, ft_strlen(&(*s)[i]));
 	tmp2 = ft_strsub(*s, 0, i);
@@ -88,7 +87,6 @@ void	addzero(char **s, t_key *k)
 {
 	int		size;
 	char	*zeros;
-	char	*tmp;
 
 	size = PREC - (int)ft_strlen(*s);
 	zeros = ft_strnew(size + 1);
@@ -103,14 +101,20 @@ char	*print_c(int wchr, t_key *k)
 	int 	c;
 
 	c = wchr;
+	if (c == 0)
+	{
+		WIDTH = WIDTH ? WIDTH - 1 : WIDTH;
+		count++;
+	}
 	tmp = (char *)ft_getcharW(c);
-	spaaacesorzeeeros(&tmp, k);
+	if (WIDTH)
+		spaaacesorzeeeros(&tmp, k);
 	if (LEFT)
 		left(&tmp, k);
 	return(tmp);
 }
 
-// Was merged
+// ?Was merged
 /* 
 char	*print_s(char *s, t_key *k)
 {
@@ -137,11 +141,13 @@ char	*print_S(int *ws, t_key *k)
 	int		lens;
 	char	*s;
 	
-//	system("leaks a.out");
-	s = CONV == 'S' ? (char *)ft_getstrW(ws) : ft_strjoin(0,(char *)ws);
+	if (ws == 0)
+		s = ft_strjoin(0, "(null)");
+	else 
+		s = CONV == 'S' || SMOD == 'l' ? (char *)ft_getstrW(ws) : ft_strjoin(0,(char *)ws);
 	lens = (int)ft_strlen(s);
 	size = lens;
-	if (PREC >= 0 && CONV == 's')
+	if (PREC >= 0 /*&& CONV == 's'*/)
 		size = ((lens - PREC) >= 0) ? PREC : lens;
 	tmp = ft_strsub(s, 0, size);
 	spaaacesorzeeeros(&tmp,k);
@@ -151,20 +157,26 @@ char	*print_S(int *ws, t_key *k)
 	return (tmp);
 }
 
+// ? Was merged with print_x/ print_o
+// !
+// !
+//  //Fucking zeros
+// ? DONE
+// !
 char	*print_xo(unsigned long n, t_key *k)
 {
 	char	*tmp;
-	char	*tmpzero;
 	int		fuckzero;
-
 
 	tmp = ft_itoa_base(n, CONV == 'o' || CONV == 'O' ? 8 : 16);
 	fuckzero = (int)ft_strlen(tmp);
 	if (PREC > (int)ft_strlen(tmp))
 		addzero(&tmp,k);
-	if (HASH && PREC <= fuckzero && (CONV == 'O' || CONV == 'o'))
+	if (!PREC  && !n)															// ! костиль
+		*tmp = 0;
+	if ((HASH && ((PREC <= fuckzero && n ) || (!n && !PREC))) && (CONV == 'O' || CONV == 'o'))
 		tmp = strinsert(&tmp,"0",0);
-	if ((HASH || CONV == 'p') && (CONV != 'O' && CONV != 'o'))
+	if ((HASH && n && CONV != 'O' && CONV != 'o') || CONV == 'p')
 		tmp = strinsert(&tmp,"0x",0);
 	if (WIDTH - (int)ft_strlen(tmp) > 0)
 		spaaacesorzeeeros(&tmp,k);
@@ -175,7 +187,6 @@ char	*print_xo(unsigned long n, t_key *k)
 		tmp[fuckzero] = ft_toupper(tmp[fuckzero]);
 	return (tmp);
 }
-// Was merged with print_x/ print_o
 /*
 char	*print_o(unsigned long n, t_key *k)
 {
@@ -196,6 +207,9 @@ char	*print_o(unsigned long n, t_key *k)
 	return (tmp);
 }
 */
+// !
+// !
+// !
 char	*print_di(long num, t_key *k)
 {
 	char	*tmp;
@@ -208,6 +222,8 @@ char	*print_di(long num, t_key *k)
 	tmp = ft_itoa_base(n, 10);
 	if (PREC > (int)ft_strlen(tmp))
 		addzero(&tmp,k);
+	if (!PREC && n == 0)														// ! костиль
+		*tmp = 0;
 	if (SIGN || sign == '-')
 		tmp = strinsert(&tmp, sign == '-' ? "-" : "+", 0);
 	else if (SPACE == 1)
@@ -218,7 +234,13 @@ char	*print_di(long num, t_key *k)
 		left(&tmp, k);
 	return (tmp);
 }
-
+// !
+// !
+// ! reWRITE THIS PICE of SHIT
+// ! need to BE MERGED
+// !
+// !
+// !
 char	*print_u(unsigned long n, t_key *k)
 {
 	char	*tmp;
@@ -226,13 +248,18 @@ char	*print_u(unsigned long n, t_key *k)
 	tmp = ft_itoa_base(n, 10);
 	if (PREC > (int)ft_strlen(tmp))
 		addzero(&tmp,k);
+	if (!PREC && n == 0)														// ! костиль
+	*tmp = 0;
 	if (WIDTH - (int)ft_strlen(tmp) > 0)
 		spaaacesorzeeeros(&tmp,k);
 	if (LEFT == 1)
 		left(&tmp, k);
 	return (tmp);
 }
-int		flag_parse(char *s, t_key *k)
+// !
+// !
+// !
+static int		flag_parse(char *s, t_key *k)
 {
 	int	i;
 
@@ -245,15 +272,15 @@ int		flag_parse(char *s, t_key *k)
 	while(s[++i] == 32 || s[i] == 48 || s[i] == 45 || s[i] == 43 || s[i] == 35)
 	{
 		SPACE = SPACE || s[i] == ' ' ? 1 : 0;
-		ZERO = ZERO || s[i] == '0' ? 1 : 0;
 		LEFT = LEFT || s[i] == '-' ? 1 : 0;
+		ZERO = (ZERO || s[i] == '0') && !LEFT ? 1 : 0;
 		SIGN = SIGN || s[i] == '+' ? 1 : 0;
 		HASH = HASH || s[i] == '#' ? 1 : 0;
 	}
 	return (i);
 }
 
-t_key	*arg_parse(char *s)
+static t_key	*arg_parse(char *s)
 {
 	int i;
 	t_key *k;
@@ -270,9 +297,9 @@ t_key	*arg_parse(char *s)
 			PREC = PREC * 10 + s[i] - 48;
 	if (s[i] == 'h' || s[i] == 'l' || s[i] == 'z' || s[i] == 'j')
 		SMOD = s[i++];
-	DSIZE = (SMOD && s[i++] == SMOD) ? 1 : 0;
-	CONV = truflag(s[i]) ? s[i] : 0;
-	SKIP = i;
+	DSIZE = (SMOD && s[i] == SMOD) ? 1 : 0;
+	CONV = truflag(s[i + DSIZE]) ? s[i + DSIZE] : 0;
+	SKIP = i + DSIZE;
 	if (CONV != 0)
 		return (k);
 	free (k);
@@ -288,7 +315,7 @@ void	addback(t_key **keys, t_key *new)
 	while(tmp && tmp->next)
 		tmp = tmp->next;
 	if (tmp)
-		tmp->next = new;
+			tmp->next = new; 
 	else
 		*keys = new;
 }
@@ -307,18 +334,66 @@ int		lstsize(t_key *l)
 	return (i);
 }
 */
+
+static unsigned char	*outstring(va_list ap, t_key *k)
+{
+	char *tmp;
+	
+	tmp = 0;
+	if (CONV == 'S' || CONV == 's')
+		tmp = print_S(va_arg(ap, int *), k);
+	else if (CONV == 'c' || CONV == 'C' || CONV == '%')
+	{
+		
+		if (SMOD == 'h' && DSIZE)
+			tmp = print_c(CONV == '%' ? '%': (char)va_arg(ap, int), k);
+		else if (SMOD == 'h')
+			tmp = print_c((short)va_arg(ap, int ),k);
+		else 
+			tmp = print_c(CONV == '%' ? '%': va_arg(ap, int), k);
+	}
+	else if (CONV == 'x' || CONV == 'X' || CONV == 'p' || CONV == 'o' || CONV == 'O')
+	{
+		if (SMOD == 'l' || SMOD == 'z' || SMOD == 'j' || CONV == 'O')
+			tmp = print_xo(va_arg(ap, unsigned long),k);
+		else if (SMOD == 'h' && DSIZE)
+			tmp = print_xo((unsigned char)va_arg(ap, unsigned int),k);
+		else if (SMOD == 'h')
+			tmp = print_xo((unsigned short)va_arg(ap, unsigned int),k);
+		else
+			tmp = print_xo((unsigned long)va_arg(ap, unsigned int),k);
+	}
+	else if (CONV == 'i' || CONV == 'd' || CONV == 'D')
+	{
+		if (SMOD == 'l' || SMOD == 'z' || SMOD == 'j' || CONV == 'D')
+			tmp = print_di(va_arg(ap, long ),k);
+		else if (SMOD == 'h' && DSIZE)
+			tmp = print_di((char)va_arg(ap, int),k);
+		else if (SMOD == 'h')
+			tmp = print_di((short)va_arg(ap, int ),k);
+		else
+			tmp = print_di((long)va_arg(ap, int ),k);
+	}
+	else if (CONV == 'u' || CONV == 'U')
+	{
+		if (SMOD == 'l' || SMOD == 'j' || CONV =='U' || SMOD == 'z')
+			tmp = print_u((unsigned long)va_arg(ap, unsigned long),k);
+		else
+			tmp = print_u((unsigned)va_arg(ap, unsigned),k);
+	}
+	return ((unsigned char *)tmp);
+}
 int		ft_printf(char *s, ...)
 {
 	va_list			ap;
 	t_key			*k;
 	unsigned char	*tmp;
-	int				ret;
 	int				i;
 	char			*symb;
 	char			*start;
 
 	va_start(ap, s);
-	ret = 0;
+	count = 0;
 	start = s;
 	while (1)
 	{
@@ -328,55 +403,25 @@ int		ft_printf(char *s, ...)
 		i = symb - s;
 		write(1, s, i);
 		k = arg_parse(&s[i]);
-		ret += i;
-		s = s + i + SKIP + 1;
-		if (!k)
+		count += i;
+		if (k == 0)
 			return (-1);
-		if (CONV == 'S' || CONV == 's')
-			tmp = (unsigned char *)print_S(va_arg(ap, int *), k);
-		else if (CONV == 'c' || CONV == 'C' || CONV == '%')
-			tmp = (unsigned char *)print_c(CONV == '%' ? '%':va_arg(ap, int), k);
-		else if (CONV == 'x' || CONV == 'X' || CONV == 'p' || CONV == 'o' || CONV == 'O')
-			tmp = (unsigned char *)print_xo(va_arg(ap, unsigned long),k);
-		else if (CONV == 'i' || CONV == 'd')
-		{
-			if (SMOD == 'l')
-				tmp = (unsigned char *)print_di(va_arg(ap, long ),k);
-			else 
-				tmp = (unsigned char *)print_di((long)va_arg(ap, int ),k);
-		}
-		else if (CONV == 'u')
-				tmp = (unsigned char *)print_u((long)va_arg(ap, int ),k);
-		else 
+		s = s + i + SKIP + 1;
+		if (!(tmp = outstring(ap, k)))
 			break;
 		i = ft_strlen((char*)tmp);
-		ret += i;
+		count += i;
 		write(1, tmp, i);
 		free (tmp);
 		free (k);
 	}
 	va_end(ap);
 	i = ft_strlen((char*)s);
-	ret += i;
+	count += i;
 	write(1, s, i);
-	return (ret);
+	return (count);
 }
-/*
-int main (int ac, char **av)
-{
-	setlocale(LC_ALL, "");
-	int	or;
-	int	ft;
 
-	or = printf		("or%s	§%#x§%C|\n","123",12333, 947);
-	//ft = ft_printf	("ft%s	§%#x§%C|\n","123",12333, 947);
-	printf("or	%d\n", or);
-	//printf("ft	%d\n", ft);
-	//system("leaks a.out");
-	return (0);
-
-}
-*/
 /*
 
 int		ft_printf2(char *s, ...)

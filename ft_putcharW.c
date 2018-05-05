@@ -6,18 +6,18 @@
 /*   By: tkuhar <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/04/27 19:45:26 by tkuhar            #+#    #+#             */
-/*   Updated: 2018/05/04 16:20:20 by tkuhar           ###   ########.fr       */
+/*   Updated: 2018/05/05 20:24:37 by tkuhar           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_printf.h"
 #include <wchar.h>
-
+#include <locale.h>
 unsigned char	*ft_getcharW(wchar_t c)
 {
-	unsigned char symb[4];
+	unsigned char symb[5];
 
-	ft_bzero(symb,4);
+	ft_bzero(symb,5);
 	if(c < 128)
 		symb[0] = c;
 	else if (c < 2048)
@@ -27,24 +27,31 @@ unsigned char	*ft_getcharW(wchar_t c)
 	}
 	else if (c < 65536)
 	{
-		symb[0] = (c >> 12 & 15) | 224;
-		symb[1] = (c >> 6 & 63) | 192 ;
+		symb[0] = ((c >> 12) & 15) | 224;
+		symb[1] = ((c >> 6) & 63) | 128 ;
 		symb[2] = (c & 63) | 128 ;
 	}
 	else
 	{
 		symb[0] = (c >> 18 & 7) | 224;
-		symb[1] = (c >> 12 & 63) | 224;
-		symb[2] = (c >> 6 & 63) | 192 ;
+		symb[1] = (c >> 12 & 63) | 128;
+		symb[2] = (c >> 6 & 63) | 128 ;
 		symb[3] = (c & 63) | 128 ;
 	}
-	return ((unsigned char *)ft_strsub((char *)symb, 0, 
-		ft_strlen((char *)symb)));
+	return ((unsigned char *)ft_strsub((char *)symb, 0, ft_strlen((char *)symb)));
 }
-
-/*int	main(int ac, char **av)
+/*
+int	main(int ac, char **av)
 {
-	ft_putcharW(atoi(av[1]));
+	setlocale(LC_ALL, "");
+
+	char s[]= {226,201,165,0};
+	putchar(226);
+	putchar(201);
+	putchar(165);
+
+	printf ("\n%C\n", 8805);
+	printf ("\n%s\n", ft_getcharW(atoi(av[1])));
 	return (0);
 }*/
 /*10
