@@ -6,7 +6,7 @@
 /*   By: tkuhar <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/04/23 11:56:34 by tkuhar            #+#    #+#             */
-/*   Updated: 2018/05/11 16:24:44 by tkuhar           ###   ########.fr       */
+/*   Updated: 2018/05/11 16:32:49 by tkuhar           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -106,7 +106,7 @@ int			print_cC(int wchr, t_key *k)
 		tmp = ft_strnew(1);
 		*tmp = wchr;
 	}
-	else if (!(tmp = (char *)ft_getcharW(wchr)))
+	else if (!(tmp = (char *)ft_getcharw(wchr)))
 		return (-1);
 	if (WIDTH)
 		spaaacesorzeeeros(&tmp, k);
@@ -159,7 +159,7 @@ int			print_xo(unsigned long n, t_key *k)
 	fuckzero = (int)ft_strlen(tmp);
 	if (PREC > fuckzero)
 		addzero(&tmp,k);
-	if (!PREC  && !n)															// ! костиль
+	if (!PREC  && !n)															// ! костыль
 		*tmp = 0;
 	if ((HASH && ((PREC <= fuckzero && n ) ||
 		(!n && !PREC))) && (CONV == 'O' || CONV == 'o'))

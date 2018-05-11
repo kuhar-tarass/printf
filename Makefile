@@ -6,14 +6,14 @@
 #    By: tkuhar <marvin@42.fr>                      +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2018/05/05 10:58:02 by tkuhar            #+#    #+#              #
-#    Updated: 2018/05/10 20:52:55 by tkuhar           ###   ########.fr        #
+#    Updated: 2018/05/11 16:33:37 by tkuhar           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 CC= gcc
 FLAGS= -Wall -Wextra -Werror
 NAME= libftprintf.a
-SRC= ft_printf.c ft_putcharW.c ft_putstrW.c ft_itoa_base.c
+SRC= ft_printf.c ft_getcharw.c ft_getstrw.c ft_itoa_base.c
 OBJ= $(SRC:%.c=%.o)
 
 all: $(NAME)
