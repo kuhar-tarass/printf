@@ -6,9 +6,19 @@
 #    By: tkuhar <marvin@42.fr>                      +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2018/03/22 20:42:59 by tkuhar            #+#    #+#              #
-#    Updated: 2018/04/12 14:26:14 by tkuhar           ###   ########.fr        #
+#    Updated: 2018/05/11 19:17:51 by tkuhar           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
+
+COLOR_OFF=\033[0m#			# Text Reset
+BLACK	=\033[0;30m#		# Black
+RED		=\033[0;31m#		# Red
+GREEN	=\033[0;32m#		# Green
+YELLOW	=\033[0;33m#		# Yellow
+BLUE	=\033[0;34m#		# Blue
+PURPLE	=\033[0;35m#		# Purple
+CYAN	=\033[0;36m#		# Cyan
+WHITE	=\033[0;37m#		# White
 
 CC= gcc
 FLAGS= -Wall -Wextra -Werror
@@ -27,19 +37,20 @@ ft_lstpush_back.c ft_lstpush_front.c ft_strsplit_lst.c ft_exp.c ft_lstfind.c
 
 OBJ= $(SRC:%.c=%.o)
 
+OK_STRING	=***	$(NAME) created		***
+
 all: $(NAME)
 
 $(NAME): $(OBJ) 
 	@ar rcs $(NAME) $(OBJ) 
-	@echo "\n$(NAME) created\n"
 %.o:%.c
 	@$(CC) $(FLAGS) -c $< -o $@
-	@echo "compiling $<"
+	@printf "$(CYAN)compiling $<$(COLOR_OFF)\n"
 clean:
 	@rm -f $(OBJ)
-	@echo "remove OBJ"
+	@printf "$(YELLOW)remove OBJ$(COLOR_OFF)\n"
 fclean: clean
 	@rm -f $(NAME)
-	@echo "remove $(NAME)"
+	@printf "$(RED)remove $(NAME)$(COLOR_OFF)\n"
 
 re: fclean all
