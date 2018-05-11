@@ -6,7 +6,7 @@
 #    By: tkuhar <marvin@42.fr>                      +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2018/05/05 10:58:02 by tkuhar            #+#    #+#              #
-#    Updated: 2018/05/05 12:56:09 by tkuhar           ###   ########.fr        #
+#    Updated: 2018/05/10 20:52:55 by tkuhar           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -22,14 +22,19 @@ $(NAME): $(OBJ)
 	@$(MAKE) -C ./libft
 	@ar rcs $(NAME) $(OBJ) ./libft/*.o
 	@echo "#####################DONE##################\\n"
+
 %.o:%.c
-	@$(CC) $(FLAGS) -c $< -o $@
+	@$(CC) $(FLAGS) -c $< -o $@ -g
 	
 clean:
 	@rm -f $(OBJ)
-#	@echo "remove OBJ"
-fclean: clean
+	@$(MAKE) clean -C ./libft
+	@echo "remove OBJ"
+fclean:
+	@rm -f $(OBJ)
 	@rm -f $(NAME)
-#	@echo "remove $(NAME)"
+	@$(MAKE) fclean -C ./libft
+	@echo "remove OBJ"
+	@echo "remove $(NAME)"
 
 re: fclean all
