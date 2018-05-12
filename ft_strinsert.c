@@ -1,38 +1,33 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_getstrw.c                                       :+:      :+:    :+:   */
+/*   ft_strinsert.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: tkuhar <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2018/04/27 20:55:45 by tkuhar            #+#    #+#             */
-/*   Updated: 2018/05/12 17:43:56 by tkuhar           ###   ########.fr       */
+/*   Created: 2018/05/12 17:38:22 by tkuhar            #+#    #+#             */
+/*   Updated: 2018/05/12 17:44:34 by tkuhar           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_printf.h"
 
-char	*ft_getstrw(wchar_t const *s)
+char		*ft_strinsert(char **dst, char *src, int index)
 {
 	int		i;
-	char	*result;
 	char	*tmp;
+	int		dstl;
 
-	result = ft_strjoin("", 0);
-	i = 0;
-	tmp = 0;
-	if (s)
-		while (s[i])
-		{
-			tmp = (char *)ft_getcharw(s[i++]);
-			if (tmp)
-				result = ft_strinsert(&result, tmp, ft_strlen(result));
-			else
-			{
-				free(result);
-				return (0);
-			}
-			free(tmp);
-		}
-	return (result);
+	dstl = ft_strlen(*dst);
+	if (dst == 0 || !(tmp = ft_strnew(dstl + ft_strlen(src))) || index > dstl)
+		return (0);
+	i = -1;
+	while (++i < index)
+		tmp[i] = (*dst)[i];
+	while (*src)
+		tmp[i++] = *src++;
+	while (index < dstl)
+		tmp[i++] = (*dst)[index++];
+	free(*dst);
+	return (tmp);
 }
