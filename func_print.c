@@ -6,7 +6,7 @@
 /*   By: tkuhar <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/05/12 17:35:23 by tkuhar            #+#    #+#             */
-/*   Updated: 2018/05/12 17:43:56 by tkuhar           ###   ########.fr       */
+/*   Updated: 2018/05/12 21:00:13 by tkuhar           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,12 +45,12 @@ int			print_ss(int *ws, t_key *k)
 	int		lens;
 	char	*s;
 	int		out;
-	
+
 	if (ws == 0)
 		s = ft_strjoin(0, "(null)");
-	else 
+	else
 		s = CONV == 'S' || SMOD == 'l' ? (char *)ft_getstrw(ws) :
-			ft_strjoin(0,(char *)ws);
+			ft_strjoin(0, (char *)ws);
 	if (s == 0)
 		return (-1);
 	lens = (int)ft_strlen(s);
@@ -58,9 +58,9 @@ int			print_ss(int *ws, t_key *k)
 	if (PREC >= 0)
 		size = ((lens - PREC) >= 0) ? PREC : lens;
 	tmp = ft_strsub(s, 0, size);
-	spaaacesorzeeeros(&tmp,k);
+	spaaacesorzeeeros(&tmp, k);
 	if (LEFT)
-		left(&tmp,k);
+		left(&tmp, k);
 	out = write(1, tmp, ft_strlen(tmp));
 	free(s);
 	free(tmp);
@@ -76,20 +76,20 @@ int			print_xo(unsigned long n, t_key *k)
 	tmp = ft_itoa_base(n, CONV == 'o' || CONV == 'O' ? 8 : 16);
 	fuckzero = (int)ft_strlen(tmp);
 	if (PREC > fuckzero)
-		addzero(&tmp,k);
-	if (!PREC  && !n)															// ! костыль
+		addzero(&tmp, k);
+	if (!PREC && !n)
 		*tmp = 0;
-	if ((HASH && ((PREC <= fuckzero && n ) ||
+	if ((HASH && ((PREC <= fuckzero && n) ||
 		(!n && !PREC))) && (CONV == 'O' || CONV == 'o'))
-		tmp = ft_strinsert(&tmp,"0",0);
+		tmp = ft_strinsert(&tmp, "0", 0);
 	if ((HASH && n && CONV != 'O' && CONV != 'o') || CONV == 'p')
-		tmp = ft_strinsert(&tmp,"0x",0);
+		tmp = ft_strinsert(&tmp, "0x", 0);
 	if (WIDTH - (int)ft_strlen(tmp) > 0)
-		spaaacesorzeeeros(&tmp,k);
+		spaaacesorzeeeros(&tmp, k);
 	if (LEFT == 1)
 		left(&tmp, k);
 	fuckzero = -1;
-	while(tmp[++fuckzero] && CONV == 'X')
+	while (tmp[++fuckzero] && CONV == 'X')
 		tmp[fuckzero] = ft_toupper(tmp[fuckzero]);
 	out = write(1, tmp, ft_strlen(tmp));
 	free(tmp);
@@ -98,17 +98,17 @@ int			print_xo(unsigned long n, t_key *k)
 
 int			print_di(long num, t_key *k)
 {
-	char	*tmp;
-	char	sign;
-	unsigned long n;
-	int		out;
+	char			*tmp;
+	char			sign;
+	unsigned long	n;
+	int				out;
 
 	n = num < 0 ? ~num + 1 : num;
 	sign = num < 0 ? '-' : '+';
 	SPACE = sign == '-' ? 0 : SPACE;
 	tmp = ft_itoa_base(n, 10);
 	if (PREC > (int)ft_strlen(tmp))
-		addzero(&tmp,k);
+		addzero(&tmp, k);
 	if (!PREC && n == 0)
 		*tmp = 0;
 	if (SIGN || sign == '-')
@@ -116,7 +116,7 @@ int			print_di(long num, t_key *k)
 	else if (SPACE == 1)
 		tmp = ft_strinsert(&tmp, " ", 0);
 	if (WIDTH - (int)ft_strlen(tmp) > 0)
-		spaaacesorzeeeros(&tmp,k);
+		spaaacesorzeeeros(&tmp, k);
 	if (LEFT == 1)
 		left(&tmp, k);
 	out = write(1, tmp, ft_strlen(tmp));
@@ -131,11 +131,11 @@ int			print_u(unsigned long n, t_key *k)
 
 	tmp = ft_itoa_base(n, 10);
 	if (PREC > (int)ft_strlen(tmp))
-		addzero(&tmp,k);
+		addzero(&tmp, k);
 	if (!PREC && n == 0)
 		*tmp = 0;
 	if (WIDTH - (int)ft_strlen(tmp) > 0)
-		spaaacesorzeeeros(&tmp,k);
+		spaaacesorzeeeros(&tmp, k);
 	if (LEFT == 1)
 		left(&tmp, k);
 	out = write(1, tmp, ft_strlen(tmp));

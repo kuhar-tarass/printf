@@ -6,13 +6,13 @@
 /*   By: tkuhar <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/04/23 11:56:34 by tkuhar            #+#    #+#             */
-/*   Updated: 2018/05/12 17:41:52 by tkuhar           ###   ########.fr       */
+/*   Updated: 2018/05/12 20:58:38 by tkuhar           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_printf.h"
 
-static int	truflag(char c)
+static int		truflag(char c)
 {
 	if (c == 's' || c == 'S' || c == 'p' || c == 'd' || c == 'D' ||
 		c == 'i' || c == 'o' || c == 'O' || c == 'u' || c == 'U' ||
@@ -21,7 +21,7 @@ static int	truflag(char c)
 	return (0);
 }
 
-static int	flag_parse(char *s, t_key *k)
+static int		flag_parse(char *s, t_key *k)
 {
 	int	i;
 
@@ -31,7 +31,7 @@ static int	flag_parse(char *s, t_key *k)
 	SIGN = 0;
 	HASH = 0;
 	i = 0;
-	while(s[++i] == 32 || s[i] == 48 || s[i] == 45 || s[i] == 43 || s[i] == 35)
+	while (s[++i] == 32 || s[i] == 48 || s[i] == 45 || s[i] == 43 || s[i] == 35)
 	{
 		SPACE = SPACE || s[i] == ' ' ? 1 : 0;
 		LEFT = LEFT || s[i] == '-' ? 1 : 0;
@@ -44,18 +44,18 @@ static int	flag_parse(char *s, t_key *k)
 
 static t_key	*arg_parse(char *s)
 {
-	int i;
-	t_key *k;
+	int		i;
+	t_key	*k;
 
 	k = malloc(sizeof(t_key));
 	WIDTH = 0;
 	PREC = -1;
 	SMOD = 0;
-	i = flag_parse(s,k);
-	while(s[i] >= '0' && s[i] <= '9')
+	i = flag_parse(s, k);
+	while (s[i] >= '0' && s[i] <= '9')
 		WIDTH = WIDTH * 10 + s[i++] - 48;
 	if (s[i] == '.' && !(PREC = 0))
-		while(s[++i] >= '0' && s[i] <= '9')
+		while (s[++i] >= '0' && s[i] <= '9')
 			PREC = PREC * 10 + s[i] - 48;
 	if (s[i] == 'h' || s[i] == 'l' || s[i] == 'z' || s[i] == 'j')
 		SMOD = s[i++];
@@ -65,10 +65,9 @@ static t_key	*arg_parse(char *s)
 	return (k);
 }
 
-static int	outstring(va_list ap, t_key *k)
+static int		outstring(va_list ap, t_key *k)
 {
 	int		tmp;
-	
 	char	other;
 
 	tmp = 0;
@@ -88,12 +87,12 @@ static int	outstring(va_list ap, t_key *k)
 	else if (CONV == 'i' || CONV == 'd' || CONV == 'D')
 		tmp = ddicall(ap, k);
 	else if (CONV == 'u' || CONV == 'U')
-		tmp = uUcall(ap, k);
+		tmp = uucall(ap, k);
 	free(k);
 	return (tmp);
 }
 
-int		ft_printf(char *s, ...)
+int				ft_printf(char *s, ...)
 {
 	va_list			ap;
 	int				i;
@@ -107,13 +106,12 @@ int		ft_printf(char *s, ...)
 	{
 		symb = ft_strchr(s, '%');
 		if (!symb)
-			break;
+			break ;
 		count += write(1, s, symb - s);
 		k = arg_parse(symb);
 		s = symb + SKIP;
-		i = outstring(ap, k);
-		if (i < 0)
-			break;
+		if ((i = outstring(ap, k)) < 0)
+			break ;
 		count += i;
 	}
 	va_end(ap);

@@ -6,7 +6,7 @@
 /*   By: tkuhar <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/05/12 17:40:06 by tkuhar            #+#    #+#             */
-/*   Updated: 2018/05/12 17:46:50 by tkuhar           ###   ########.fr       */
+/*   Updated: 2018/05/12 17:59:30 by tkuhar           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,14 +23,15 @@ void		spaaacesorzeeeros(char **s, t_key *k)
 	buf = ft_strnew(f + 1);
 	buf = ft_memset(buf, (PREC == -1 && ZERO) ? '0' : ' ', f);
 	if (CONV == 'x' || CONV == 'X' || CONV == 'p')
-		*s = ft_strinsert(s,buf, (HASH && ZERO) || (ZERO && CONV == 'p') ? 2 : 0);
+		*s = ft_strinsert(s, buf, ZERO && (HASH || CONV == 'p') ? 2 : 0);
 	else if (CONV == 'o' || CONV == 'O')
-		*s = ft_strinsert(s,buf,HASH && ZERO ? 1 : 0);
+		*s = ft_strinsert(s, buf, HASH && ZERO ? 1 : 0);
 	else if (CONV == 'd' || CONV == 'i')
-		*s = ft_strinsert(s, buf, (**s == ' ' || **s == '-' || **s == '+') && ZERO ? 1 : 0);
+		*s = ft_strinsert(s, buf, (**s == ' ' || **s == '-' || **s == '+')
+			&& ZERO ? 1 : 0);
 	else
 		*s = ft_strinsert(s, buf, 0);
-	free (buf);
+	free(buf);
 	return ;
 }
 
