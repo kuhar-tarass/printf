@@ -6,7 +6,7 @@
 /*   By: tkuhar <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/05/12 17:29:03 by tkuhar            #+#    #+#             */
-/*   Updated: 2018/05/12 18:05:06 by tkuhar           ###   ########.fr       */
+/*   Updated: 2018/05/12 21:55:57 by tkuhar           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,9 @@ int		cccall(va_list ap, t_key *k)
 {
 	int tmp;
 
-	if (SMOD == 'h' && DSIZE && CONV == 'c')
+	if (CONV == '%' && (CONV = 'c'))
+		tmp = print_cc('%', k);
+	else if (SMOD == 'h' && DSIZE && CONV == 'c')
 		tmp = print_cc((char)va_arg(ap, int), k);
 	else if (SMOD == 'h')
 		tmp = print_cc((short)va_arg(ap, int), k);
@@ -24,7 +26,7 @@ int		cccall(va_list ap, t_key *k)
 	{
 		if (SMOD == 'l' && CONV == 'c')
 			CONV = 'C';
-		tmp = print_cc(CONV == '%' ? '%' : va_arg(ap, int), k);
+		tmp = print_cc(va_arg(ap, int), k);
 	}
 	return (tmp);
 }

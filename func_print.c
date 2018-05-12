@@ -6,7 +6,7 @@
 /*   By: tkuhar <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/05/12 17:35:23 by tkuhar            #+#    #+#             */
-/*   Updated: 2018/05/12 21:00:13 by tkuhar           ###   ########.fr       */
+/*   Updated: 2018/05/12 21:54:31 by tkuhar           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,12 +19,14 @@ int			print_cc(int wchr, t_key *k)
 
 	if (wchr == 0)
 		WIDTH = WIDTH ? WIDTH - 1 : WIDTH;
-	if (CONV == 'c')
+	if (CONV == 'C' && MB_CUR_MAX > 1)
+		tmp = (char *)ft_getcharw(wchr);
+	else if (CONV == 'c' || (wchr < 255 && MB_CUR_MAX == 1))
 	{
 		tmp = ft_strnew(1);
 		*tmp = wchr;
 	}
-	else if (!(tmp = (char *)ft_getcharw(wchr)))
+	else
 		return (-1);
 	if (WIDTH)
 		spaaacesorzeeeros(&tmp, k);
